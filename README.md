@@ -2,7 +2,7 @@
 
 A daily Spanish practice planner for self-directed learners who also work with a tutor.
 
-**Live demo:** _add your GitHub Pages link here_
+**Live demo:** [builtbycapri.github.io/hablamos-plan](https://builtbycapri.github.io/hablamos-plan/)
 
 <p>
   <img src="screenshots/today.png" alt="Today tab: daily checklist and weekly rhythm" width="240">
