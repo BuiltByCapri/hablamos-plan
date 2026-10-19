@@ -1,0 +1,16 @@
+# OS clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Secrets, in case any are ever added
+.env
+.env.*
+
+# Local tooling
+node_modules/

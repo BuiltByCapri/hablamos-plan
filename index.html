@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hablamos</title>
+<meta name="description" content="A daily Spanish practice planner for learners who also work with a tutor: lesson calendar, vocab log, pronunciation guide, conjugator and flashcards.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hablamos">
+<meta name="theme-color" content="#06281E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2306281E'/%3E%3Ctext x='50' y='64' font-size='46' font-family='Georgia,serif' font-weight='700' fill='%23D9AE3E' text-anchor='middle'%3EES%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2306281E'/%3E%3Ctext x='50' y='62' font-size='46' font-family='Georgia,serif' font-weight='700' fill='%23D9AE3E' text-anchor='middle'%3EES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#041D16;
+    --emerald-deep:#06281E;
+    --emerald-mid:#0E5A40;
+    --emerald-bright:#14A876;
+    --surface:#0F4433;
+    --surface-2:#166049;
+    --paper:#F7F0DA;
+    --marigold:#D9AE3E;
+    --gold-light:#F6DE96;
+    --gold-deep:#A8791E;
+    --danger:#F2A88E;
+    --line: rgba(217,174,62,0.18);
+    --muted: rgba(247,240,218,0.6);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(20,168,118,0.35), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(217,174,62,0.10), transparent 55%),
+      linear-gradient(180deg, var(--emerald-mid) 0%, var(--emerald-deep) 40%, var(--ink) 100%);
+    background-color:var(--ink);
+    background-attachment:fixed;
+    color:var(--paper);
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  button, input, select{font-family:inherit;}
+  button:focus-visible, input:focus-visible, select:focus-visible, .cal-cell:focus-visible, .alpha-cell:focus-visible, .num-chip:focus-visible, .check-item:focus-visible, .flashcard:focus-visible{
+    outline:2px solid var(--gold-light);outline-offset:2px;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:28px 20px 0;}
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-size:13px;font-weight:700;margin-bottom:6px;
+    letter-spacing:0.06em;text-transform:uppercase;
+    background:linear-gradient(120deg,var(--gold-light),var(--marigold) 55%,var(--gold-deep));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  h1{
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:700;
+    font-size:34px;
+    line-height:1.1;
+    margin:0 0 8px;
+  }
+  .sub{color:var(--muted);font-size:14px;max-width:52ch;line-height:1.5;}
+
+  .day-banner{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px 18px;
+    background:linear-gradient(160deg, var(--surface-2), var(--surface));
+    border-radius:10px;
+    margin-bottom:22px;
+    border:1px solid var(--line);
+    box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 20px rgba(0,0,0,0.25);
+  }
+  .day-banner .day{font-family:'Fraunces',Georgia,serif;font-size:19px;font-weight:600;}
+  .day-banner .tag{
+    font-size:12px;
+    color:var(--ink);
+    background:linear-gradient(135deg, var(--gold-light), var(--marigold) 60%, var(--gold-deep));
+    padding:3px 10px;
+    border-radius:20px;
+    font-weight:700;
+    white-space:nowrap;
+    box-shadow:0 2px 8px rgba(217,174,62,0.35);
+  }
+  .day-banner .tag.off{background:var(--surface-2);color:var(--muted);box-shadow:none;}
+
+  section{margin-bottom:32px;}
+  h2{
+    font-family:'Fraunces',Georgia,serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 14px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  h2::after{
+    content:'';
+    position:absolute;
+    left:0;bottom:-1px;
+    width:36px;height:2px;
+    background:linear-gradient(90deg, var(--gold-light), var(--marigold));
+  }
+
+  .checklist{display:flex;flex-direction:column;gap:10px;}
+  .check-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 16px;
+    width:100%;
+    text-align:left;
+    color:var(--paper);
+    background:linear-gradient(155deg, var(--surface-2), var(--surface));
+    border-radius:10px;
+    border:1px solid var(--line);
+    cursor:pointer;
+    transition:background 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+  }
+  .check-item:active{background:var(--surface-2);}
+  .check-item.done{opacity:0.7;border-color:rgba(217,174,62,0.35);}
+  .box{
+    width:22px;height:22px;
+    border-radius:7px;
+    border:2px solid var(--marigold);
+    box-shadow:0 0 0 3px rgba(217,174,62,0.08);
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+    transition:box-shadow 0.2s ease;
+  }
+  .check-item.done .box{
+    background:radial-gradient(circle at 32% 28%, var(--gold-light), var(--marigold) 55%, var(--gold-deep) 100%);
+    box-shadow:0 0 10px rgba(217,174,62,0.55);
+    border-color:var(--gold-light);
+  }
+  .item-text{font-size:15px;}
+  .item-text .label{display:block;}
+  .item-text .note{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .check-item.done .label{text-decoration:line-through;}
+
+  .week-grid{display:flex;flex-direction:column;gap:8px;}
+  .week-row{
+    display:grid;
+    grid-template-columns:78px 1fr;
+    gap:14px;
+    padding:11px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .week-row:last-child{border-bottom:none;}
+  .week-row .wd{color:var(--marigold);font-weight:700;}
+  .week-row .wd.tutor{
+    background:linear-gradient(120deg,var(--gold-light),var(--emerald-bright));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .week-row.is-today{background:rgba(217,174,62,0.06);border-radius:6px;padding-inline:8px;margin-inline:-8px;}
+
+  .vocab-form{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .text-input, .vocab-form input, .dict-form input, .settings select{
+    flex:1;
+    min-width:120px;
+    min-height:44px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 12px;
+    color:var(--paper);
+    font-size:14px;
+  }
+  .vocab-form input::placeholder, .dict-form input::placeholder, .text-input::placeholder{color:var(--muted);}
+  .vocab-form select, .edit-mode select{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0 10px;
+    min-height:44px;
+    color:var(--paper);
+    font-size:13px;
+    flex-shrink:0;
+  }
+  .vocab-cat-header{
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    font-weight:700;
+    color:var(--marigold);
+    margin:16px 0 8px;
+  }
+  .vocab-cat-header:first-child{margin-top:0;}
+  .btn-gold, .vocab-form button, .dict-form button:not(.dir-toggle){
+    background:linear-gradient(135deg, var(--gold-light), var(--marigold) 60%, var(--gold-deep));
+    color:var(--ink);
+    border:none;
+    border-radius:8px;
+    padding:0 18px;
+    min-height:44px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    box-shadow:0 3px 10px rgba(217,174,62,0.3);
+  }
+  .btn-quiet{
+    background:var(--surface-2);
+    color:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0 14px;
+    min-height:40px;
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .dict-form{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .dir-toggle{
+    flex-shrink:0;
+    background:var(--surface-2);
+    color:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0 12px;
+    min-height:44px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .dict-card{
+    background:linear-gradient(155deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .dict-card .content{flex:1;min-width:0;}
+  .dict-card .from{font-size:13px;color:var(--muted);margin-bottom:4px;overflow-wrap:anywhere;}
+  .dict-card input.to{
+    display:block;
+    width:100%;
+    font-weight:700;
+    color:var(--emerald-bright);
+    font-size:15px;
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed rgba(20,168,118,0.4);
+    padding:2px 0 4px;
+  }
+  .dict-card input.to:focus{outline:none;border-bottom-color:var(--emerald-bright);}
+  .dict-card input.phon-input{
+    display:block;
+    width:100%;
+    font-size:12.5px;
+    font-style:italic;
+    color:var(--muted);
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed var(--line);
+    padding:3px 0;
+    margin-top:2px;
+  }
+  .dict-card input.phon-input::placeholder{color:var(--muted);}
+  .dict-card input.phon-input:focus{outline:none;border-bottom-color:var(--marigold);color:var(--paper);}
+  .dict-card .save-btn{
+    flex-shrink:0;
+    background:linear-gradient(135deg, var(--gold-light), var(--marigold) 60%, var(--gold-deep));
+    color:var(--ink);
+    border:none;
+    border-radius:8px;
+    padding:8px 12px;
+    min-height:36px;
+    font-weight:700;
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .dict-card.saved .save-btn{opacity:0.5;pointer-events:none;}
+  .alts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted);}
+  .alt-chip{
+    background:var(--ink);border:1px solid var(--line);color:var(--paper);
+    border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;
+  }
+  .alt-chip:hover{border-color:var(--marigold);}
+
+  .vocab-list{display:flex;flex-direction:column;gap:8px;}
+  .vocab-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(155deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+  }
+  .vocab-row .es{font-weight:700;color:var(--emerald-bright);overflow-wrap:anywhere;}
+  .vocab-row .phon{color:var(--muted);font-size:12px;font-style:italic;font-weight:400;margin-left:6px;}
+  .vocab-row .en{color:var(--muted);font-size:13.5px;overflow-wrap:anywhere;}
+  .vocab-row .content{flex:1;min-width:0;}
+  .icon-btn{
+    background:none;border:none;
+    font-size:16px;cursor:pointer;line-height:1;
+    min-width:36px;min-height:36px;padding:4px;border-radius:6px;
+  }
+  .row-actions{display:flex;gap:2px;flex-shrink:0;align-items:center;}
+  .speak{color:var(--marigold);}
+  .edit{color:var(--emerald-bright);}
+  .del{color:var(--muted);font-size:20px;}
+  .content.edit-mode{display:flex;flex-direction:column;gap:6px;flex:1;}
+  .content.edit-mode input{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:7px 9px;
+    color:var(--paper);
+    font-size:13.5px;
+  }
+  .content.edit-mode input:focus{outline:none;border-color:var(--marigold);}
+  .edit-save{color:var(--marigold);font-weight:700;font-size:18px;}
+  .edit-cancel{color:var(--muted);font-size:18px;}
+  .empty{color:var(--muted);font-size:13.5px;padding:8px 2px;line-height:1.5;}
+
+  .streak{text-align:center;font-size:13px;color:var(--muted);margin-top:14px;min-height:1em;}
+  .streak b{
+    background:linear-gradient(120deg,var(--gold-light),var(--marigold) 50%,var(--gold-deep));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  .next-lesson{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+  .next-lesson b{color:var(--emerald-bright);}
+  .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .cal-nav{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    color:var(--paper);
+    width:40px;height:40px;
+    border-radius:8px;
+    font-size:18px;
+    cursor:pointer;
+  }
+  .cal-month{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:16px;}
+  .cal-weekdays{
+    display:grid;grid-template-columns:repeat(7,1fr);
+    text-align:center;font-size:11px;color:var(--muted);
+    margin-bottom:6px;
+  }
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+  .cal-cell{
+    aspect-ratio:1;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:8px;
+    border:none;
+    font-size:13px;
+    cursor:pointer;
+    color:var(--paper);
+    background:var(--surface);
+    font-variant-numeric:tabular-nums;
+    transition:transform 0.1s ease;
+  }
+  .cal-cell:active{transform:scale(0.94);}
+  .cal-cell.pad{visibility:hidden;cursor:default;}
+  .cal-cell.scheduled{box-shadow:inset 0 0 0 2px var(--marigold);}
+  .cal-cell.marked{
+    background:radial-gradient(circle at 32% 28%, var(--gold-light), var(--marigold) 55%, var(--gold-deep) 100%);
+    color:var(--ink);
+    font-weight:700;
+    box-shadow:0 0 10px rgba(217,174,62,0.5);
+  }
+  .cal-cell.today{outline:2px solid var(--emerald-bright);outline-offset:1px;}
+  .cal-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px;}
+  .cal-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend-dot{width:11px;height:11px;border-radius:3px;display:inline-block;background:var(--surface);}
+  .legend-dot.ring{box-shadow:inset 0 0 0 2px var(--marigold);}
+  .legend-dot.fill{background:linear-gradient(135deg,var(--gold-light),var(--marigold));}
+
+  /* Tabs */
+  .tab-bar{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:6px;
+    margin-bottom:24px;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+  }
+  .tab-bar::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex-shrink:0;
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-weight:600;
+    font-size:13.5px;
+    padding:9px 16px;
+    min-height:40px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all 0.15s ease;
+  }
+  .tab-btn.active{
+    background:linear-gradient(135deg, var(--gold-light), var(--marigold) 60%, var(--gold-deep));
+    color:var(--ink);
+    border-color:transparent;
+    box-shadow:0 3px 10px rgba(217,174,62,0.3);
+  }
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* Alphabet */
+  .alpha-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .alpha-cell{
+    background:linear-gradient(155deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 10px;
+    cursor:pointer;
+    text-align:left;
+    color:var(--paper);
+    transition:transform 0.1s ease;
+  }
+  .alpha-cell:active{transform:scale(0.96);}
+  .alpha-cell .letter{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:19px;color:var(--emerald-bright);}
+  .alpha-cell .phon{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;font-style:italic;}
+
+  /* Grammar tables */
+  .gram-table{display:flex;flex-direction:column;gap:6px;}
+  .gram-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
+    padding:11px 12px;
+    background:linear-gradient(155deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-size:13.5px;
+    align-items:center;
+  }
+  .gram-row.head{
+    background:none;
+    border:none;
+    color:var(--marigold);
+    font-weight:700;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:0 12px;
+  }
+  .gram-row .es-col{color:var(--emerald-bright);font-weight:600;cursor:pointer;}
+  .gram-row .en-col{color:var(--muted);}
+  .num-pattern-card{
+    background:linear-gradient(155deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:10px;
+  }
+  .num-pattern-label{font-weight:700;color:var(--marigold);font-size:13px;margin-bottom:4px;}
+  .num-pattern-note{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+  .num-pattern-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .num-chip{
+    background:var(--ink);
+    border:1px solid rgba(217,174,62,0.3);
+    color:var(--emerald-bright);
+    font-weight:600;
+    font-size:13px;
+    padding:7px 11px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  .num-chip:active{background:var(--surface-2);}
+
+  /* Practice / flashcards */
+  .flashcard{
+    width:100%;
+    background:linear-gradient(160deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:40px 20px;
+    text-align:center;
+    min-height:160px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--paper);
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    margin-bottom:16px;
+  }
+  .flashcard-face{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:26px;color:var(--paper);overflow-wrap:anywhere;}
+  .flashcard-face.answer{color:var(--emerald-bright);}
+  .flashcard-cat{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--marigold);margin-bottom:8px;font-weight:700;}
+  .flashcard-phon{font-size:13px;color:var(--muted);font-style:italic;margin-top:8px;}
+  .practice-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+  .practice-controls button{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    color:var(--paper);
+    border-radius:8px;
+    padding:10px 8px;
+    min-height:44px;
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .flip-btn{
+    width:100%;
+    background:linear-gradient(135deg, var(--gold-light), var(--marigold) 60%, var(--gold-deep));
+    color:var(--ink);
+    border:none;
+    border-radius:8px;
+    padding:12px;
+    min-height:44px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    margin-bottom:10px;
+  }
+  .shuffle-btn{
+    width:100%;
+    background:none;
+    border:1px solid var(--line);
+    color:var(--muted);
+    border-radius:8px;
+    padding:9px;
+    min-height:40px;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  /* Settings */
+  .settings{display:flex;flex-direction:column;gap:14px;}
+  .field-label{display:block;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--marigold);margin-bottom:6px;}
+  .field-label .hint{text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted);}
+  .day-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .day-chip{
+    min-width:52px;min-height:40px;padding:0 12px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--line);color:var(--muted);
+    font-weight:600;font-size:13px;cursor:pointer;
+  }
+  .day-chip[aria-pressed="true"]{
+    background:linear-gradient(135deg, var(--gold-light), var(--marigold) 60%, var(--gold-deep));
+    color:var(--ink);border-color:transparent;
+  }
+  .settings .text-input{width:100%;}
+  .settings select{width:100%;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .row > .grow{flex:1 1 180px;min-width:0;}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .seg button{min-height:40px;padding:0 14px;background:transparent;color:var(--muted);border:0;font-weight:600;cursor:pointer;}
+  .seg button[aria-pressed="true"]{background:var(--marigold);color:var(--ink);}
+  .note-small{font-size:12.5px;color:var(--muted);line-height:1.5;margin:0;}
+  .note-small b{color:var(--paper);font-weight:600;}
+  .danger-btn{background:none;border:1px solid rgba(242,168,142,0.5);color:var(--danger);border-radius:8px;min-height:40px;padding:0 14px;font-weight:600;cursor:pointer;}
+  .confirm-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:13px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Spanish speaking plan</div>
+    <h1>Hablamos</h1>
+    <div class="sub">Daily input, real conversation, and a running log of what you're actually picking up between lessons.</div>
+  </header>
+
+  <div class="tab-bar" id="tabBar" role="tablist">
+    <button class="tab-btn" data-tab="today" type="button">Today</button>
+    <button class="tab-btn" data-tab="calendar" type="button">Calendar</button>
+    <button class="tab-btn" data-tab="vocab" type="button">Vocab</button>
+    <button class="tab-btn" data-tab="alphabet" type="button">Alphabet</button>
+    <button class="tab-btn" data-tab="grammar" type="button">Grammar</button>
+    <button class="tab-btn" data-tab="practice" type="button">Practice</button>
+    <button class="tab-btn" data-tab="settings" type="button">Settings</button>
+  </div>
+
+  <div class="tab-panel" data-panel="today">
+    <div class="day-banner">
+      <div class="day" id="todayLabel"></div>
+      <div class="tag" id="todayTag"></div>
+    </div>
+
+    <section>
+      <h2>Today</h2>
+      <div class="checklist" id="checklist"></div>
+      <div class="streak" id="streakLine"></div>
+    </section>
+
+    <section>
+      <h2>Weekly rhythm</h2>
+      <div class="week-grid" id="weekGrid"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel" data-panel="calendar">
+    <section>
+      <h2>Lessons calendar</h2>
+      <div class="next-lesson" id="nextLessonLine"></div>
+      <div class="cal-header">
+        <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">‹</button>
+        <div class="cal-month" id="calMonthLabel"></div>
+        <button class="cal-nav" id="calNext" type="button" aria-label="Next month">›</button>
+      </div>
+      <div class="cal-weekdays">
+        <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <span><span class="legend-dot ring"></span> Your weekly lesson days</span>
+        <span><span class="legend-dot fill"></span> Lesson added or logged</span>
+      </div>
+      <p class="note-small" style="margin-top:12px;">Tap a date to add or remove a lesson. Set your weekly lesson days in Settings.</p>
+    </section>
+  </div>
+
+  <div class="tab-panel" data-panel="vocab">
+    <section>
+      <h2>Look it up</h2>
+      <div class="dict-form">
+        <button id="dirToggle" class="dir-toggle" type="button" aria-label="Switch translation direction">ES → EN</button>
+        <input type="text" id="dictInput" placeholder="type a word or phrase" autocomplete="off" aria-label="Word or phrase to look up">
+        <button id="dictSearch" type="button">Search</button>
+      </div>
+      <div id="dictResult"></div>
+    </section>
+
+    <section>
+      <h2>Vocab log</h2>
+      <div class="vocab-form">
+        <select id="categorySelect" aria-label="Category"></select>
+        <input type="text" id="esInput" placeholder="Spanish word/phrase" autocomplete="off" aria-label="Spanish word or phrase">
+        <input type="text" id="enInput" placeholder="what it means" autocomplete="off" aria-label="Meaning">
+        <input type="text" id="phonInput" placeholder="pronunciation (optional)" autocomplete="off" aria-label="Pronunciation">
+        <button id="addVocab" type="button">Add</button>
+      </div>
+      <div class="vocab-list" id="vocabList"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel" data-panel="alphabet">
+    <section>
+      <h2>The Spanish alphabet</h2>
+      <div class="sub" style="margin-bottom:14px;">Tap any letter to hear its name said aloud.</div>
+      <div class="alpha-grid" id="alphaGrid"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel" data-panel="grammar">
+    <section>
+      <h2>Verb conjugator</h2>
+      <div class="sub" style="margin-bottom:14px;">Type a verb in its infinitive form (like "hablar", "tener" or "llamarse") to see it in the present tense.</div>
+      <div class="dict-form">
+        <input type="text" id="verbInput" placeholder="e.g. hablar, tener, poder" autocomplete="off" aria-label="Verb">
+        <button id="verbSearch" type="button">Conjugate</button>
+      </div>
+      <div id="verbResult"></div>
+    </section>
+
+    <section>
+      <h2>Subject pronouns</h2>
+      <div class="gram-table" id="pronounTable"></div>
+    </section>
+
+    <section>
+      <h2>Regular verb endings: present tense</h2>
+      <div class="sub" style="margin-bottom:14px;">The three verb families, shown with "hablar" (to speak), "comer" (to eat) and "vivir" (to live). Tap any word to hear it.</div>
+      <div class="gram-table" id="verbTable"></div>
+    </section>
+
+    <section>
+      <h2>Number patterns</h2>
+      <div class="sub" style="margin-bottom:14px;">Each range of Spanish numbers is built a different way. Tap any word to hear it.</div>
+      <div id="numberPatterns"></div>
+    </section>
+
+    <section>
+      <h2>Ser vs. estar: both mean "to be"</h2>
+      <div class="sub" style="margin-bottom:14px;"><b style="color:var(--emerald-bright);">Ser</b> is for what something is: identity, traits, origin ("soy Ana", "soy alta"). <b style="color:var(--marigold);">Estar</b> is for how or where something is right now: feelings, location, current state ("estoy cansada", "estoy en casa"). Tap any word to hear it.</div>
+      <div class="gram-table" id="serEstarTable"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel" data-panel="practice">
+    <section>
+      <h2>Flashcards</h2>
+      <div class="sub" id="practiceCount" style="margin-bottom:14px;"></div>
+      <button class="flashcard" id="flashcard" type="button" aria-label="Flip card">
+        <span class="flashcard-cat" id="flashcardCat"></span>
+        <span class="flashcard-face" id="flashcardFace">Add some vocab first</span>
+        <span class="flashcard-phon" id="flashcardPhon"></span>
+      </button>
+      <button id="practiceFlip" class="flip-btn" type="button">Flip card</button>
+      <div class="practice-controls">
+        <button id="practicePrev" type="button">‹ Prev</button>
+        <button id="practiceSpeak" type="button">&#128266; Listen</button>
+        <button id="practiceNext" type="button">Next ›</button>
+      </div>
+      <button id="practiceShuffle" class="shuffle-btn" type="button">&#128256; Shuffle</button>
+    </section>
+  </div>
+
+  <div class="tab-panel" data-panel="settings">
+    <section>
+      <h2>Your lessons</h2>
+      <div class="settings">
+        <div>
+          <span class="field-label">Lesson days</span>
+          <div class="day-chips" id="lessonDayChips" role="group" aria-label="Lesson days"></div>
+        </div>
+        <div>
+          <label class="field-label" for="startDate">Weekly lessons start on <span class="hint">(optional)</span></label>
+          <input type="date" id="startDate" class="text-input">
+        </div>
+        <div>
+          <label class="field-label" for="lessonLabel">What to call a lesson</label>
+          <input type="text" id="lessonLabel" class="text-input" placeholder="Tutor session" autocomplete="off">
+        </div>
+        <div>
+          <label class="field-label" for="lessonNote">Lesson note <span class="hint">(shown on the checklist)</span></label>
+          <input type="text" id="lessonNote" class="text-input" placeholder="1 hour, review your notes after" autocomplete="off">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>One-off lesson dates</h2>
+      <div class="sub" style="margin-bottom:12px;">For lessons outside your weekly days, or to log a lesson you had. Tapping a date on the Calendar does the same thing.</div>
+      <div class="dict-form">
+        <input type="date" id="extraDate" aria-label="Lesson date">
+        <button id="addExtraDate" type="button">Add date</button>
+      </div>
+      <div class="vocab-list" id="extraDateList"></div>
+    </section>
+
+    <section>
+      <h2>Speech</h2>
+      <div class="settings">
+        <div class="row">
+          <div>
+            <span class="field-label">Accent</span>
+            <div class="seg" role="group" aria-label="Accent">
+              <button type="button" data-accent="es-MX">Latin America</button>
+              <button type="button" data-accent="es-ES">Spain</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="grow">
+            <label class="field-label" for="voiceSelect">Voice</label>
+            <select id="voiceSelect"></select>
+          </div>
+          <button id="testVoice" class="btn-quiet" type="button" style="align-self:flex-end;">Test voice</button>
+        </div>
+        <p class="note-small">Accent also changes the pronunciation guide: Spain says "c" before e/i and "z" as <i>th</i>, Latin America says them as <i>s</i>.</p>
+        <p class="note-small"><b>On iPhone:</b> better voices can be downloaded under Settings &gt; Accessibility &gt; Spoken Content &gt; Voices &gt; Spanish.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Your data</h2>
+      <p class="note-small" style="margin-bottom:12px;">Everything you add is saved in this browser only. Nothing is sent anywhere except the words you look up in the dictionary.</p>
+      <button id="resetBtn" class="danger-btn" type="button">Clear all my data</button>
+      <div class="confirm-row" id="resetConfirm" hidden>
+        <span>This deletes your vocab, lessons and streak.</span>
+        <button id="resetYes" class="danger-btn" type="button">Yes, clear everything</button>
+        <button id="resetNo" class="btn-quiet" type="button">Cancel</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+// ===================================================================
+// CUSTOMIZE HERE
+// Lesson days, start date, lesson name, accent and voice are set in the
+// app's Settings tab. These constants cover the rest of the routine.
+// ===================================================================
+
+// Habits shown on the checklist every day.
+const DAILY_TASKS = [
+  { id: 'listen', label: 'Listen to Spanish', note: '10–15 minutes of something you enjoy' },
+  { id: 'write', label: 'Write or text in Spanish', note: "even a few sentences counts" },
+];
+
+// The extra task for each day of the week that is NOT a lesson day.
+// 0 = Sunday, 1 = Monday ... 6 = Saturday.
+const WEEKLY_PLAN = {
+  0: { id: 'convo', label: 'Conversation practice', note: 'unrushed, with a language partner or native speaker' },
+  1: { id: 'study', label: 'Structured study', note: 'grammar from your course or textbook, 20–30 min' },
+  2: { id: 'study', label: 'Structured study', note: 'grammar from your course or textbook, 20–30 min' },
+  3: { id: 'study', label: 'Structured study', note: 'grammar from your course or textbook, 20–30 min' },
+  4: { id: 'study', label: 'Structured study', note: 'grammar from your course or textbook, 20–30 min' },
+  5: { id: 'input', label: 'Easy listening or a song', note: 'pick up vocab outside your lessons' },
+  6: { id: 'immersion', label: 'Longer immersion', note: 'a show, a movie or a longer call' },
+};
+
+// Starting values for the Settings tab. lessonDays uses 0 = Sunday ... 6 = Saturday.
+const DEFAULT_SETTINGS = {
+  lessonDays: [],
+  startDate: '',
+  lessonLabel: 'Tutor session',
+  lessonNote: '1 hour, review your notes after',
+  accent: 'es-MX',   // 'es-MX' (Latin America) or 'es-ES' (Spain)
+  voice: '',         // empty = pick the best Spanish voice automatically
+};
+
+// Vocab categories, in display order.
+const CATEGORIES = [
+  { value: 'General', label: 'General' },
+  { value: 'Numbers', label: 'Numbers' },
+  { value: 'Colors', label: 'Colors' },
+  { value: 'Animals', label: 'Animals' },
+  { value: 'Household', label: 'Household' },
+  { value: 'States', label: 'States (physical & mental)' },
+];
+
+// ===================================================================
+// Storage. Every key is prefixed so this app never collides with other
+// pages served from the same origin (all of a user's GitHub Pages
+// projects share one origin, and so share localStorage).
+// ===================================================================
+const PREFIX = 'hablamos:';
+
+function readStr(key){ try { return localStorage.getItem(PREFIX + key); } catch (e) { return null; } }
+function writeStr(key, val){ try { localStorage.setItem(PREFIX + key, val); } catch (e) {} }
+function readJSON(key, fallback){
+  const raw = readStr(key);
+  if (raw == null) return fallback;
+  try { return JSON.parse(raw); } catch (e) { return fallback; }
+}
+function writeJSON(key, val){ writeStr(key, JSON.stringify(val)); }
+
+// Earlier versions stored unprefixed keys. Copy them over once.
+function migrateLegacyKeys(){
+  if (readStr('migrated')) return;
+  try {
+    const legacy = ['vocab-log', 'lesson-days', 'streak-count', 'active-tab',
+      'vocab-week1-seeded', 'vocab-categories-seeded', 'vocab-numbers-seeded', 'vocab-states-seeded'];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('checklist:')) legacy.push(k);
+    }
+    legacy.forEach(k => {
+      const v = localStorage.getItem(k);
+      if (v != null && localStorage.getItem(PREFIX + k) == null) localStorage.setItem(PREFIX + k, v);
+    });
+  } catch (e) {}
+  writeStr('migrated', '1');
+}
+
+function getSettings(){
+  const s = { ...DEFAULT_SETTINGS, ...readJSON('settings', {}) };
+  if (!Array.isArray(s.lessonDays)) s.lessonDays = [];
+  return s;
+}
+function saveSettings(s){ writeJSON('settings', s); }
+
+// ===================================================================
+// Dates. Keys use the local date, never UTC.
+// ===================================================================
+const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WEEKDAYS_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function pad2(n){ return String(n).padStart(2, '0'); }
+function dateKey(d){ return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function todayKey(){ return dateKey(new Date()); }
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function parseKey(k){ return new Date(k + 'T00:00:00'); }
+function startOfToday(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
+
+function getMarkedDays(){ return new Set(readJSON('lesson-days', [])); }
+function saveMarkedDays(set){ writeJSON('lesson-days', [...set].sort()); }
+
+function isScheduled(d){
+  const s = getSettings();
+  if (!s.lessonDays.includes(d.getDay())) return false;
+  if (s.startDate) {
+    const day = new Date(d); day.setHours(0,0,0,0);
+    if (day < parseKey(s.startDate)) return false;
+  }
+  return true;
+}
+function isLessonToday(){ return isScheduled(new Date()) || getMarkedDays().has(todayKey()); }
+
+// ===================================================================
+// Today: checklist, streak, weekly rhythm
+// ===================================================================
+function getTasksForToday(){
+  const s = getSettings();
+  const tasks = DAILY_TASKS.slice();
+  if (isLessonToday()) {
+    tasks.push({ id: 'lesson', label: s.lessonLabel || 'Lesson', note: s.lessonNote || '' });
+  } else {
+    const plan = WEEKLY_PLAN[new Date().getDay()];
+    if (plan) tasks.push(plan);
+  }
+  return tasks;
+}
+
+let currentState = {};
+let tasks = [];
+
+function renderChecklist(){
+  const dow = new Date().getDay();
+  const lessonToday = isLessonToday();
+  document.getElementById('todayLabel').textContent = WEEKDAYS[dow];
+  const tag = document.getElementById('todayTag');
+  tag.textContent = lessonToday ? 'Lesson day' : 'Practice day';
+  tag.className = 'tag' + (lessonToday ? '' : ' off');
+
+  tasks = getTasksForToday();
+  currentState = readJSON('checklist:' + todayKey(), {});
+
+  const list = document.getElementById('checklist');
+  list.innerHTML = '';
+  tasks.forEach(t => {
+    const done = !!currentState[t.id];
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'check-item' + (done ? ' done' : '');
+    el.setAttribute('aria-pressed', String(done));
+    const box = document.createElement('span');
+    box.className = 'box';
+    box.textContent = done ? '✓' : '';
+    const text = document.createElement('span');
+    text.className = 'item-text';
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = t.label;
+    text.appendChild(label);
+    if (t.note) {
+      const note = document.createElement('span');
+      note.className = 'note';
+      note.textContent = t.note;
+      text.appendChild(note);
+    }
+    el.append(box, text);
+    el.addEventListener('click', () => {
+      currentState[t.id] = !currentState[t.id];
+      writeJSON('checklist:' + todayKey(), currentState);
+      renderChecklist();
+    });
+    list.appendChild(el);
+  });
+  updateStreakLine();
+}
+
+// A day counts once, the first time every task is checked. Missing a day resets the streak.
+function updateStreakLine(){
+  const allDone = tasks.length > 0 && tasks.every(t => currentState[t.id]);
+  const today = todayKey();
+  const yesterday = dateKey(addDays(new Date(), -1));
+  let streak = readJSON('streak-count', 0);
+  let last = readStr('streak-day');
+
+  if (allDone && last !== today) {
+    streak = last === yesterday ? streak + 1 : 1;
+    writeJSON('streak-count', streak);
+    writeStr('streak-day', today);
+    last = today;
+  }
+
+  const el = document.getElementById('streakLine');
+  if (last === today) {
+    el.innerHTML = `<b>${streak} day${streak === 1 ? '' : 's'}</b> in a row with everything checked off`;
+  } else if (last === yesterday && streak > 0) {
+    el.innerHTML = `Current streak: <b>${streak}</b>. Finish today to keep it going.`;
+  } else {
+    el.textContent = '';
+  }
+}
+
+function renderWeekGrid(){
+  const s = getSettings();
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  const todayDow = new Date().getDay();
+  [1,2,3,4,5,6,0].forEach(dow => {
+    const lesson = s.lessonDays.includes(dow);
+    const plan = WEEKLY_PLAN[dow];
+    const row = document.createElement('div');
+    row.className = 'week-row' + (dow === todayDow ? ' is-today' : '');
+    const wd = document.createElement('div');
+    wd.className = 'wd' + (lesson ? ' tutor' : '');
+    wd.textContent = WEEKDAYS_SHORT[dow];
+    const what = document.createElement('div');
+    what.textContent = lesson
+      ? (s.lessonLabel || 'Lesson') + (s.lessonNote ? ', ' + s.lessonNote : '')
+      : (plan ? plan.label + (plan.note ? ', ' + plan.note : '') : 'Rest');
+    row.append(wd, what);
+    grid.appendChild(row);
+  });
+}
+
+// ===================================================================
+// Speech
+// ===================================================================
+let spanishVoices = [];
+const GOOD_VOICE = /(paulina|m[oó]nica|jorge|juan|marisol|google espa[nñ]ol)/i;
+
+function rankVoice(v, accent){
+  let s = 0;
+  if (/premium/i.test(v.name)) s += 100;
+  if (/enhanced|mejorad/i.test(v.name)) s += 90;
+  if (/natural|neural/i.test(v.name)) s += 80;
+  if (GOOD_VOICE.test(v.name)) s += 60;
+  if (/compact/i.test(v.name)) s -= 40;
+  const lang = v.lang.replace('_', '-');
+  if (lang.toLowerCase() === accent.toLowerCase()) s += 25;
+  else if (accent === 'es-MX' && /es-(US|419)/i.test(lang)) s += 15;
+  return s;
+}
+
+function loadVoices(){
+  if (!('speechSynthesis' in window)) return;
+  spanishVoices = window.speechSynthesis.getVoices().filter(v => /^es/i.test(v.lang));
+  renderVoiceSelect();
+}
+
+function pickVoice(){
+  const s = getSettings();
+  if (s.voice) {
+    const chosen = spanishVoices.find(v => v.name === s.voice);
+    if (chosen) return chosen;
+  }
+  return spanishVoices.slice().sort((a, b) => rankVoice(b, s.accent) - rankVoice(a, s.accent))[0] || null;
+}
+
+function speakSpanish(text){
+  if (!text || !('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  const voice = pickVoice();
+  if (voice) utter.voice = voice;
+  utter.lang = voice ? voice.lang : getSettings().accent;
+  utter.rate = 0.85;
+  window.speechSynthesis.speak(utter);
+}
+
+// ===================================================================
+// Pronunciation guide. Spanish spelling maps closely to sound, so the
+// guide is generated from the spelling: split into syllables, find the
+// stressed one, then respell each sound for an English speaker.
+// e.g. cansado -> kahn-SAH-doh, mañana -> mah-NYAH-nah
+// ===================================================================
+const VOWELS = 'aeiouáéíóúü';
+const STRONG = 'aeoáéóíú';      // accented i/u act as strong vowels
+const ACCENTED = 'áéíóú';
+const ONSET_CLUSTERS = ['pl','pr','bl','br','fl','fr','cl','cr','gl','gr','tr','dr','kl','kr'];
+
+function splitUnits(word){
+  const units = [];
+  for (let i = 0; i < word.length; i++) {
+    const c = word[i], two = word.slice(i, i + 2), next2 = word[i + 2] || '';
+    if (two === 'ch' || two === 'll' || two === 'rr') { units.push({ t: two, v: false }); i++; continue; }
+    if ((two === 'qu' || two === 'gu') && 'eiéí'.includes(next2)) { units.push({ t: two, v: false }); i++; continue; }
+    if (c === 'y' && i === word.length - 1 && i > 0 && VOWELS.includes(word[i - 1])) { units.push({ t: 'y', v: true }); continue; }
+    if (c === 'y' && word.length === 1) { units.push({ t: 'y', v: true }); continue; }
+    units.push({ t: c, v: VOWELS.includes(c) });
+  }
+  return units;
+}
+
+function isStrong(u){ return STRONG.includes(u.t); }
+
+function syllabify(word){
+  const units = splitUnits(word);
+  // Group vowels into nuclei, splitting at a hiatus.
+  const nuclei = []; // { start, end } indexes into units (inclusive)
+  for (let i = 0; i < units.length; i++) {
+    if (!units[i].v) continue;
+    const prev = nuclei[nuclei.length - 1];
+    const joinable = prev && prev.end === i - 1 && !(isStrong(units[i]) && isStrong(units[i - 1]));
+    if (joinable) prev.end = i; else nuclei.push({ start: i, end: i });
+  }
+  if (!nuclei.length) return null;
+
+  const cuts = []; // index where each syllable after the first begins
+  for (let n = 1; n < nuclei.length; n++) {
+    const from = nuclei[n - 1].end + 1, to = nuclei[n].start; // consonant run is [from, to)
+    const run = units.slice(from, to).map(u => u.t);
+    let cut;
+    if (run.length === 0) cut = to;
+    else if (run.length === 1) cut = from;
+    else if (run.length === 2) cut = ONSET_CLUSTERS.includes(run.join('')) ? from : from + 1;
+    else if (run.length === 3) cut = ONSET_CLUSTERS.includes(run[1] + run[2]) ? from + 1 : from + 2;
+    else cut = from + 2;
+    cuts.push(cut);
+  }
+  const syllables = [];
+  let start = 0;
+  cuts.concat(units.length).forEach(end => { syllables.push(units.slice(start, end)); start = end; });
+  return syllables;
+}
+
+function stressIndex(syllables, word){
+  for (let i = 0; i < syllables.length; i++) {
+    if (syllables[i].some(u => ACCENTED.includes(u.t))) return i;
+  }
+  if (syllables.length === 1) return 0;
+  return /[aeiouns]$/.test(word) ? syllables.length - 2 : syllables.length - 1;
+}
+
+function respellNucleus(vs, hasOnset){
+  const plain = { a:'ah', á:'ah', e:'eh', é:'eh', i:'ee', í:'ee', o:'oh', ó:'oh', u:'oo', ú:'oo', ü:'oo', y:'ee' };
+  const weak = t => 'iuüy'.includes(t);
+  let glide = '';
+  let rest = vs.slice();
+  if (rest.length > 1 && weak(rest[0])) {
+    glide = rest[0] === 'i' || rest[0] === 'y' ? 'y' : 'w';
+    rest = rest.slice(1);
+  }
+  if (rest.length === 1) return glide + plain[rest[0]];
+  const pair = rest[0].normalize('NFD')[0] + (rest[1] === 'y' ? 'i' : rest[1]);
+  // "ai" reads as "eye" on its own (hay) and "ye" after a consonant (baile -> BYE-leh).
+  const diph = { ai: (hasOnset || glide) ? 'ye' : 'eye', ei:'ay', oi:'oy', au:'ow', eu:'eh-oo', ou:'oh-oo', ui:'wee', iu:'yoo' };
+  return glide + (diph[pair] || rest.map(t => plain[t] || t).join(''));
+}
+
+function respellConsonant(units, i, word, accent){
+  const t = units[i].t;
+  const next = units[i + 1] ? units[i + 1].t : '';
+  const prev = units[i - 1] ? units[i - 1].t : '';
+  const soft = 'eiéí'.includes(next);
+  const lisp = accent === 'es-ES';
+  switch (t) {
+    case 'b': case 'v': return 'b';
+    case 'c': return soft ? (lisp ? 'th' : 's') : 'k';
+    case 'z': return lisp ? 'th' : 's';
+    case 'g': return soft ? 'h' : 'g';
+    case 'gu': return 'g';
+    case 'qu': return 'k';
+    case 'h': return '';
+    case 'j': return 'h';
+    case 'll': return 'y';
+    case 'ñ': return 'ny';
+    case 'r': return (i === 0 || 'lns'.includes(prev)) ? 'rr' : 'r';
+    case 'x': return /^m[eé]xic/.test(word) ? 'h' : 'ks';
+    default: return t;
+  }
+}
+
+function pronounceWord(raw, accent){
+  const word = raw.toLowerCase().replace(/[^a-záéíóúüñ]/g, '');
+  if (!word) return '';
+  const syllables = syllabify(word);
+  if (!syllables) return word;
+  const stressed = stressIndex(syllables, word);
+  const flat = syllables.flat();
+  let pos = 0;
+  const parts = syllables.map((syl, si) => {
+    let out = '';
+    let vowelRun = [];
+    const flush = () => { if (vowelRun.length) { out += respellNucleus(vowelRun, out.length > 0); vowelRun = []; } };
+    syl.forEach(u => {
+      if (u.v) vowelRun.push(u.t);
+      else { flush(); out += respellConsonant(flat, pos, word, accent); }
+      pos++;
+    });
+    flush();
+    return syllables.length > 1 && si === stressed ? out.toUpperCase() : out;
+  });
+  return parts.join('-');
+}
+
+function pronounce(text, accent){
+  if (!text) return '';
+  accent = accent || getSettings().accent;
+  return text.split(/\s+/).map(w => pronounceWord(w, accent)).filter(Boolean).join(' ');
+}
+
+// ===================================================================
+// Vocab log
+// ===================================================================
+function getVocab(){ return readJSON('vocab-log', []); }
+function saveVocab(entries){ writeJSON('vocab-log', entries); }
+
+function fillCategorySelect(select, selected){
+  select.innerHTML = '';
+  CATEGORIES.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.value; o.textContent = c.label;
+    if (c.value === selected) o.selected = true;
+    select.appendChild(o);
+  });
+}
+
+function iconButton(cls, label, text){
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'icon-btn ' + cls;
+  b.title = label;
+  b.setAttribute('aria-label', label);
+  b.textContent = text;
+  return b;
+}
+
+function renderVocab(){
+  const entries = getVocab();
+  const listEl = document.getElementById('vocabList');
+  listEl.innerHTML = '';
+  if (entries.length === 0) {
+    listEl.innerHTML = '<div class="empty">Nothing logged yet. Add a word above, or look one up and save it.</div>';
+    return;
+  }
+
+  const order = CATEGORIES.map(c => c.value);
+  const groups = {};
+  entries.forEach((e, idx) => {
+    const cat = e.category || 'General';
+    (groups[cat] = groups[cat] || []).push({ ...e, idx });
+  });
+  const orderedCats = [
+    ...order.filter(c => groups[c]),
+    ...Object.keys(groups).filter(c => !order.includes(c)).sort(),
+  ];
+
+  orderedCats.forEach(cat => {
+    const header = document.createElement('div');
+    header.className = 'vocab-cat-header';
+    header.textContent = (CATEGORIES.find(c => c.value === cat) || { label: cat }).label;
+    listEl.appendChild(header);
+
+    groups[cat].slice().reverse().forEach(entry => {
+      const row = document.createElement('div');
+      row.className = 'vocab-row';
+      row.dataset.idx = entry.idx;
+
+      const content = document.createElement('div');
+      content.className = 'content';
+      const es = document.createElement('div');
+      es.className = 'es';
+      es.textContent = entry.es;
+      const guide = entry.phonetic || pronounce(entry.es);
+      if (guide) {
+        const phon = document.createElement('span');
+        phon.className = 'phon';
+        phon.textContent = guide;
+        if (!entry.phonetic) phon.title = 'Pronunciation guide, generated from the spelling';
+        es.append(' ', phon);
+      }
+      const en = document.createElement('div');
+      en.className = 'en';
+      en.textContent = entry.en;
+      content.append(es, en);
+
+      const actions = document.createElement('div');
+      actions.className = 'row-actions';
+      const speak = iconButton('speak', 'Listen', '🔊');
+      const edit = iconButton('edit', 'Edit', '✎');
+      const del = iconButton('del', 'Delete', '×');
+      speak.addEventListener('click', () => speakSpanish(entry.es));
+      edit.addEventListener('click', () => startEditRow(row, entry.idx));
+      del.addEventListener('click', () => {
+        const all = getVocab();
+        all.splice(entry.idx, 1);
+        saveVocab(all);
+        renderVocab();
+      });
+      actions.append(speak, edit, del);
+      row.append(content, actions);
+      listEl.appendChild(row);
+    });
+  });
+}
+
+function startEditRow(row, idx){
+  const entry = getVocab()[idx];
+  if (!entry) return;
+  row.innerHTML = '';
+
+  const content = document.createElement('div');
+  content.className = 'content edit-mode';
+  const mk = (value, placeholder, label) => {
+    const i = document.createElement('input');
+    i.type = 'text'; i.value = value || ''; i.placeholder = placeholder;
+    i.setAttribute('aria-label', label);
+    return i;
+  };
+  const esInput = mk(entry.es, 'Spanish word/phrase', 'Spanish');
+  const enInput = mk(entry.en, 'what it means', 'Meaning');
+  const phonInput = mk(entry.phonetic, 'pronunciation (blank = automatic)', 'Pronunciation');
+  const catSelect = document.createElement('select');
+  catSelect.setAttribute('aria-label', 'Category');
+  fillCategorySelect(catSelect, entry.category || 'General');
+  content.append(esInput, enInput, phonInput, catSelect);
+
+  const actions = document.createElement('div');
+  actions.className = 'row-actions';
+  const saveBtn = iconButton('edit-save', 'Save', '✓');
+  const cancelBtn = iconButton('edit-cancel', 'Cancel', '✕');
+  actions.append(saveBtn, cancelBtn);
+  row.append(content, actions);
+  esInput.focus();
+
+  const commit = () => {
+    const newEs = esInput.value.trim();
+    if (!newEs) { renderVocab(); return; }
+    const all = getVocab();
+    all[idx] = { ...all[idx], es: newEs, en: enInput.value.trim(), phonetic: phonInput.value.trim() || null, category: catSelect.value };
+    saveVocab(all);
+    renderVocab();
+  };
+  saveBtn.addEventListener('click', commit);
+  cancelBtn.addEventListener('click', renderVocab);
+  [esInput, enInput, phonInput].forEach(i => i.addEventListener('keydown', e => {
+    if (e.key === 'Enter') commit();
+    if (e.key === 'Escape') renderVocab();
+  }));
+}
+
+function saveVocabEntry(es, en, phonetic, category){
+  const entries = getVocab();
+  entries.push({ es, en, phonetic: phonetic || null, category: category || 'General', date: todayKey() });
+  saveVocab(entries);
+  renderVocab();
+}
+
+document.getElementById('addVocab').addEventListener('click', () => {
+  const esInput = document.getElementById('esInput');
+  const enInput = document.getElementById('enInput');
+  const phonInput = document.getElementById('phonInput');
+  const es = esInput.value.trim();
+  if (!es) { esInput.focus(); return; }
+  saveVocabEntry(es, enInput.value.trim(), phonInput.value.trim(), document.getElementById('categorySelect').value);
+  esInput.value = ''; enInput.value = ''; phonInput.value = '';
+  esInput.focus();
+});
+['esInput', 'enInput', 'phonInput'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('addVocab').click();
+  });
+});
+
+// ---------- Starter vocab, added once on first visit ----------
+const SEED_SETS = [
+  { flag: 'vocab-week1-seeded', category: 'General', words: [
+    ['hola','hello'], ['gracias','thank you'], ['por favor','please'], ['sí','yes'], ['no','no'],
+    ['bueno','good'], ['malo','bad'], ['querer','to want'], ['necesitar','to need'], ['tener','to have'],
+    ['ir','to go'], ['hacer','to do / to make'], ['comer','to eat'], ['hoy','today'], ['mañana','tomorrow'],
+    ['ahora','now'], ['también','also'], ['mucho','a lot / much'], ['poco','a little'], ['cómo','how'],
+  ]},
+  { flag: 'vocab-categories-seeded', category: null, words: null }, // Colors, Animals, Household below
+  { flag: 'vocab-numbers-seeded', category: 'Numbers', words: [
+    ['cero','0'], ['uno','1'], ['dos','2'], ['tres','3'], ['cuatro','4'], ['cinco','5'], ['seis','6'],
+    ['siete','7'], ['ocho','8'], ['nueve','9'], ['diez','10'], ['once','11'], ['doce','12'], ['trece','13'],
+    ['catorce','14'], ['quince','15'], ['dieciséis','16'], ['diecisiete','17'], ['dieciocho','18'],
+    ['diecinueve','19'], ['veinte','20'], ['veintiuno','21'], ['veintidós','22'], ['veintitrés','23'],
+    ['veinticuatro','24'], ['veinticinco','25'], ['veintiséis','26'], ['veintisiete','27'], ['veintiocho','28'],
+    ['veintinueve','29'], ['treinta','30'], ['cuarenta','40'], ['cincuenta','50'], ['sesenta','60'],
+    ['setenta','70'], ['ochenta','80'], ['noventa','90'], ['cien','100'],
+  ]},
+  { flag: 'vocab-states-seeded', category: 'States', words: [
+    ['cansado','tired'], ['enfermo','sick'], ['relajado','relaxed'], ['hambriento','hungry'], ['feliz','happy'],
+    ['triste','sad'], ['enojado','angry'], ['nervioso','nervous'], ['emocionado','excited'], ['aburrido','bored'],
+    ['confundido','confused'], ['preocupado','worried'], ['asustado','scared'], ['sorprendido','surprised'],
+    ['ocupado','busy'], ['enamorado','in love'],
+  ]},
+];
+const SEED_CATEGORY_SETS = {
+  Colors: [['rojo','red'], ['azul','blue'], ['verde','green'], ['amarillo','yellow'], ['negro','black'],
+    ['blanco','white'], ['naranja','orange'], ['morado','purple'], ['rosado','pink'], ['gris','gray']],
+  Animals: [['perro','dog'], ['gato','cat'], ['pájaro','bird'], ['pez','fish'], ['caballo','horse'],
+    ['vaca','cow'], ['conejo','rabbit'], ['ratón','mouse']],
+  Household: [['mesa','table'], ['silla','chair'], ['cama','bed'], ['cocina','kitchen'], ['baño','bathroom'],
+    ['puerta','door'], ['ventana','window'], ['sofá','couch'], ['lámpara','lamp'], ['llave','key']],
+};
+
+function seedVocabIfNeeded(){
+  const entries = getVocab();
+  const existing = new Set(entries.map(e => e.es.toLowerCase()));
+  const add = (category, words) => words.forEach(([es, en]) => {
+    if (existing.has(es.toLowerCase())) return;
+    entries.push({ es, en, phonetic: null, category, date: todayKey() });
+    existing.add(es.toLowerCase());
+  });
+  let changed = false;
+  SEED_SETS.forEach(set => {
+    if (readStr(set.flag)) return;
+    if (set.words) add(set.category, set.words);
+    else Object.keys(SEED_CATEGORY_SETS).forEach(cat => add(cat, SEED_CATEGORY_SETS[cat]));
+    writeStr(set.flag, '1');
+    changed = true;
+  });
+  if (changed) saveVocab(entries);
+}
+
+// ===================================================================
+// Dictionary lookup (MyMemory, free, no key)
+// MyMemory mixes crowd translation memory with machine translation, and
+// its top hit is sometimes wrong (a Tagalog line for "estoy cansada").
+// So: group its candidates, pick the one most of them agree on, and offer
+// the rest as alternatives.
+// ===================================================================
+let dictDirection = 'es-en';
+
+function normText(s){
+  return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[.!?¡¿,;:"'“”«»()]/g, '').replace(/\s+/g, ' ').trim();
+}
+function accentCount(s){ return (String(s).match(/[áéíóúñü¿¡]/gi) || []).length; }
+
+function rankTranslations(data){
+  const all = (Array.isArray(data.matches) ? data.matches : []).filter(m => m && typeof m.translation === 'string' && m.translation.trim());
+  const rated = all.filter(m => Number(m.quality) !== 0);
+  const groups = new Map();
+  (rated.length ? rated : all).forEach(m => {
+    const k = normText(m.translation);
+    if (!k) return;
+    const g = groups.get(k) || { score: 0, variants: [] };
+    g.score += Number(m.match) || 0.5;
+    g.variants.push(m.translation.trim());
+    groups.set(k, g);
+  });
+  const top = data.responseData && data.responseData.translatedText;
+  if (top && normText(top) && !groups.has(normText(top))) groups.set(normText(top), { score: 0.5, variants: [top.trim()] });
+  return [...groups.values()]
+    .sort((a, b) => b.score - a.score)
+    .map(g => g.variants.slice().sort((a, b) => accentCount(b) - accentCount(a))[0]);
+}
+
+document.getElementById('dirToggle').addEventListener('click', () => {
+  dictDirection = dictDirection === 'es-en' ? 'en-es' : 'es-en';
+  document.getElementById('dirToggle').textContent = dictDirection === 'es-en' ? 'ES → EN' : 'EN → ES';
+});
+
+function showDictMessage(text){
+  const el = document.getElementById('dictResult');
+  el.innerHTML = '';
+  const d = document.createElement('div');
+  d.className = 'empty';
+  d.textContent = text;
+  el.appendChild(d);
+}
+
+async function runLookup(){
+  const query = document.getElementById('dictInput').value.trim();
+  if (!query) return;
+  const dir = dictDirection; // captured, so toggling later can't swap the saved word
+  showDictMessage('Looking that up…');
+
+  let data;
+  try {
+    const langpair = dir === 'es-en' ? 'es|en' : 'en|es';
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=${langpair}`);
+    data = await res.json();
+  } catch (e) {
+    showDictMessage("Couldn't reach the dictionary. Check your connection and try again.");
+    return;
+  }
+  if (String(data.responseStatus) !== '200') {
+    showDictMessage(String(data.responseStatus) === '429'
+      ? "The free dictionary's daily limit has been reached. Try again tomorrow."
+      : 'The dictionary returned an error. Try again in a moment.');
+    return;
+  }
+  const options = rankTranslations(data);
+  if (!options.length) { showDictMessage('No result. Try rephrasing it.'); return; }
+
+  const esOf = t => dir === 'es-en' ? query : t;
+  const enOf = t => dir === 'es-en' ? t : query;
+
+  const resultEl = document.getElementById('dictResult');
+  resultEl.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'dict-card';
+  const content = document.createElement('div');
+  content.className = 'content';
+  const from = document.createElement('div');
+  from.className = 'from';
+  from.textContent = query;
+  const to = document.createElement('input');
+  to.type = 'text'; to.className = 'to'; to.value = options[0];
+  to.setAttribute('aria-label', 'Translation, editable');
+  const phon = document.createElement('input');
+  phon.type = 'text'; phon.className = 'phon-input';
+  phon.setAttribute('aria-label', 'Pronunciation, editable');
+  const refreshGuide = () => { phon.placeholder = pronounce(esOf(to.value.trim())) || 'pronunciation (optional)'; };
+  refreshGuide();
+  to.addEventListener('input', refreshGuide);
+  content.append(from, to, phon);
+
+  if (options.length > 1) {
+    const alts = document.createElement('div');
+    alts.className = 'alts';
+    alts.append('Also:');
+    options.slice(1, 4).forEach(opt => {
+      const chip = document.createElement('button');
+      chip.type = 'button'; chip.className = 'alt-chip'; chip.textContent = opt;
+      chip.addEventListener('click', () => { to.value = opt; refreshGuide(); });
+      alts.appendChild(chip);
+    });
+    content.appendChild(alts);
+  }
+
+  const actions = document.createElement('div');
+  actions.className = 'row-actions';
+  const speak = iconButton('speak', 'Listen', '🔊');
+  speak.addEventListener('click', () => speakSpanish(esOf(to.value.trim())));
+  const save = document.createElement('button');
+  save.type = 'button'; save.className = 'save-btn'; save.textContent = '+ Save';
+  save.addEventListener('click', () => {
+    const t = to.value.trim();
+    if (!t) return;
+    saveVocabEntry(esOf(t), enOf(t), phon.value.trim(), document.getElementById('categorySelect').value);
+    card.classList.add('saved');
+    save.textContent = 'Saved';
+  });
+  actions.append(speak, save);
+  card.append(content, actions);
+  resultEl.appendChild(card);
+}
+
+document.getElementById('dictSearch').addEventListener('click', runLookup);
+document.getElementById('dictInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') runLookup(); });
+
+// ===================================================================
+// Lessons calendar
+// ===================================================================
+let calViewDate = new Date();
+calViewDate.setDate(1);
+
+function renderCalendar(){
+  const marked = getMarkedDays();
+  const year = calViewDate.getFullYear();
+  const month = calViewDate.getMonth();
+  document.getElementById('calMonthLabel').textContent =
+    calViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const startPad = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayK = todayKey();
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < startPad; i++) {
+    const pad = document.createElement('div');
+    pad.className = 'cal-cell pad';
+    grid.appendChild(pad);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day);
+    const key = dateKey(d);
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    let cls = 'cal-cell';
+    if (isScheduled(d)) cls += ' scheduled';
+    if (marked.has(key)) cls += ' marked';
+    if (key === todayK) cls += ' today';
+    cell.className = cls;
+    cell.textContent = day;
+    cell.setAttribute('aria-label', d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + (marked.has(key) ? ', lesson added' : ''));
+    cell.setAttribute('aria-pressed', String(marked.has(key)));
+    cell.addEventListener('click', () => { toggleLessonDate(key); });
+    grid.appendChild(cell);
+  }
+}
+
+function toggleLessonDate(key){
+  const m = getMarkedDays();
+  if (m.has(key)) m.delete(key); else m.add(key);
+  saveMarkedDays(m);
+  refreshLessonViews();
+}
+
+function renderNextLesson(){
+  const marked = getMarkedDays();
+  const today = startOfToday();
+  const candidates = new Map();
+  [...marked].forEach(k => { const d = parseKey(k); if (d >= today) candidates.set(k, d); });
+  for (let i = 0; i < 60; i++) {
+    const d = addDays(today, i);
+    if (isScheduled(d)) candidates.set(dateKey(d), d);
+  }
+  const sorted = [...candidates.values()].sort((a, b) => a - b);
+  const el = document.getElementById('nextLessonLine');
+  if (!sorted.length) {
+    el.textContent = 'No lessons scheduled yet. Pick your weekly lesson days in Settings, or tap a date below to add one.';
+    return;
+  }
+  const next = sorted[0];
+  const label = dateKey(next) === todayKey() ? 'Today' : next.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  el.innerHTML = '';
+  el.append('Next lesson: ');
+  const b = document.createElement('b');
+  b.textContent = label;
+  el.appendChild(b);
+}
+
+document.getElementById('calPrev').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth() - 1); renderCalendar(); });
+document.getElementById('calNext').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth() + 1); renderCalendar(); });
+
+// ===================================================================
+// Settings tab
+// ===================================================================
+function renderSettings(){
+  const s = getSettings();
+
+  const chips = document.getElementById('lessonDayChips');
+  chips.innerHTML = '';
+  [1,2,3,4,5,6,0].forEach(dow => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'day-chip';
+    b.textContent = WEEKDAYS_SHORT[dow];
+    b.setAttribute('aria-label', WEEKDAYS[dow]);
+    b.setAttribute('aria-pressed', String(s.lessonDays.includes(dow)));
+    b.addEventListener('click', () => {
+      const cur = getSettings();
+      cur.lessonDays = cur.lessonDays.includes(dow) ? cur.lessonDays.filter(d => d !== dow) : cur.lessonDays.concat(dow).sort();
+      saveSettings(cur);
+      renderSettings();
+      refreshLessonViews();
+    });
+    chips.appendChild(b);
+  });
+
+  document.getElementById('startDate').value = s.startDate || '';
+  document.getElementById('lessonLabel').value = s.lessonLabel || '';
+  document.getElementById('lessonNote').value = s.lessonNote || '';
+  document.querySelectorAll('[data-accent]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.accent === s.accent)));
+  renderVoiceSelect();
+  renderExtraDates();
+}
+
+function renderVoiceSelect(){
+  const sel = document.getElementById('voiceSelect');
+  const s = getSettings();
+  sel.innerHTML = '';
+  const auto = document.createElement('option');
+  auto.value = '';
+  const best = pickVoiceAuto(s);
+  auto.textContent = 'Automatic' + (best ? ' (' + best.name + ')' : '');
+  sel.appendChild(auto);
+  if (!('speechSynthesis' in window)) { auto.textContent = 'Speech is not supported in this browser'; sel.disabled = true; return; }
+  if (!spanishVoices.length) { auto.textContent = 'Automatic (no Spanish voice found yet)'; }
+  spanishVoices.slice().sort((a, b) => a.name.localeCompare(b.name)).forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.name; o.textContent = v.name + ' (' + v.lang + ')';
+    sel.appendChild(o);
+  });
+  sel.value = spanishVoices.some(v => v.name === s.voice) ? s.voice : '';
+}
+function pickVoiceAuto(s){
+  return spanishVoices.slice().sort((a, b) => rankVoice(b, s.accent) - rankVoice(a, s.accent))[0] || null;
+}
+
+function renderExtraDates(){
+  const list = document.getElementById('extraDateList');
+  list.innerHTML = '';
+  const today = startOfToday();
+  const all = [...getMarkedDays()].sort();
+  const upcoming = all.filter(k => parseKey(k) >= today);
+  const past = all.length - upcoming.length;
+  upcoming.forEach(k => {
+    const row = document.createElement('div');
+    row.className = 'vocab-row';
+    const label = document.createElement('div');
+    label.className = 'content';
+    label.textContent = parseKey(k).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const del = iconButton('del', 'Remove this date', '×');
+    del.addEventListener('click', () => toggleLessonDate(k));
+    row.append(label, del);
+    list.appendChild(row);
+  });
+  const summary = document.createElement('div');
+  summary.className = 'empty';
+  summary.textContent = (upcoming.length ? '' : 'No upcoming one-off lessons. ') +
+    (past ? `${past} past lesson${past === 1 ? '' : 's'} logged.` : '');
+  if (summary.textContent) list.appendChild(summary);
+}
+
+function updateSetting(key, value){
+  const s = getSettings();
+  s[key] = value;
+  saveSettings(s);
+}
+
+document.getElementById('startDate').addEventListener('change', e => { updateSetting('startDate', e.target.value); refreshLessonViews(); });
+document.getElementById('lessonLabel').addEventListener('input', e => { updateSetting('lessonLabel', e.target.value.trim()); renderChecklist(); renderWeekGrid(); });
+document.getElementById('lessonNote').addEventListener('input', e => { updateSetting('lessonNote', e.target.value.trim()); renderChecklist(); renderWeekGrid(); });
+document.querySelectorAll('[data-accent]').forEach(b => b.addEventListener('click', () => {
+  updateSetting('accent', b.dataset.accent);
+  renderSettings();
+  renderVocab();
+  renderAlphabet();
+}));
+document.getElementById('voiceSelect').addEventListener('change', e => updateSetting('voice', e.target.value));
+document.getElementById('testVoice').addEventListener('click', () => speakSpanish('Hola, ¿cómo estás? Estoy muy feliz de practicar contigo.'));
+document.getElementById('addExtraDate').addEventListener('click', () => {
+  const v = document.getElementById('extraDate').value;
+  if (!v) return;
+  const m = getMarkedDays();
+  m.add(v);
+  saveMarkedDays(m);
+  document.getElementById('extraDate').value = '';
+  refreshLessonViews();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => { document.getElementById('resetConfirm').hidden = false; });
+document.getElementById('resetNo').addEventListener('click', () => { document.getElementById('resetConfirm').hidden = true; });
+document.getElementById('resetYes').addEventListener('click', () => {
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith(PREFIX)).forEach(k => localStorage.removeItem(k));
+  } catch (e) {}
+  writeStr('migrated', '1'); // don't pull old unprefixed data back in
+  location.reload();
+});
+
+function refreshLessonViews(){
+  renderCalendar();
+  renderNextLesson();
+  renderChecklist();
+  renderWeekGrid();
+  renderExtraDates();
+}
+
+// ===================================================================
+// Tabs
+// ===================================================================
+function initTabs(){
+  const buttons = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  const valid = [...buttons].map(b => b.dataset.tab);
+  const saved = readStr('active-tab');
+
+  function activate(tab){
+    buttons.forEach(b => {
+      const on = b.dataset.tab === tab;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', String(on));
+    });
+    panels.forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
+    writeStr('active-tab', tab);
+    if (tab === 'practice') { loadPracticeDeck(); renderFlashcard(); }
+  }
+  buttons.forEach(btn => btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return; // tapping the open tab again keeps your place
+    activate(btn.dataset.tab);
+  }));
+  activate(valid.includes(saved) ? saved : 'today');
+}
+
+// ===================================================================
+// Alphabet. Tapping says the letter's Spanish name rather than the bare
+// letter, which most voices would read as an English letter or skip.
+// ===================================================================
+const SPANISH_ALPHABET = [
+  { l: 'A', p: 'ah', n: 'a' }, { l: 'B', p: 'beh', n: 'be' }, { l: 'C', p: 'seh', n: 'ce' }, { l: 'D', p: 'deh', n: 'de' },
+  { l: 'E', p: 'eh', n: 'e' }, { l: 'F', p: 'eh feh', n: 'efe' }, { l: 'G', p: 'heh', n: 'ge' }, { l: 'H', p: 'ah cheh', n: 'hache' },
+  { l: 'I', p: 'ee', n: 'i' }, { l: 'J', p: 'hoh tah', n: 'jota' }, { l: 'K', p: 'kah', n: 'ka' }, { l: 'L', p: 'eh leh', n: 'ele' },
+  { l: 'M', p: 'eh meh', n: 'eme' }, { l: 'N', p: 'eh neh', n: 'ene' }, { l: 'Ñ', p: 'eh nyeh', n: 'eñe' }, { l: 'O', p: 'oh', n: 'o' },
+  { l: 'P', p: 'peh', n: 'pe' }, { l: 'Q', p: 'koo', n: 'cu' }, { l: 'R', p: 'eh rreh', n: 'erre' }, { l: 'S', p: 'eh seh', n: 'ese' },
+  { l: 'T', p: 'teh', n: 'te' }, { l: 'U', p: 'oo', n: 'u' }, { l: 'V', p: 'oo beh', n: 'uve' }, { l: 'W', p: 'oo beh doh bleh', n: 'uve doble' },
+  { l: 'X', p: 'eh kees', n: 'equis' }, { l: 'Y', p: 'yeh', n: 'ye' }, { l: 'Z', p: 'seh tah', n: 'zeta' },
+];
+
+function renderAlphabet(){
+  const grid = document.getElementById('alphaGrid');
+  grid.innerHTML = '';
+  const lisp = getSettings().accent === 'es-ES';
+  SPANISH_ALPHABET.forEach(({ l, p, n }) => {
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'alpha-cell';
+    const letter = document.createElement('span');
+    letter.className = 'letter';
+    letter.textContent = l;
+    const phon = document.createElement('span');
+    phon.className = 'phon';
+    phon.textContent = lisp && (l === 'C' || l === 'Z') ? p.replace('seh', 'theh') : p;
+    cell.append(letter, phon);
+    cell.setAttribute('aria-label', `${l}, said ${n}`);
+    cell.addEventListener('click', () => speakSpanish(n));
+    grid.appendChild(cell);
+  });
+}
+
+// ===================================================================
+// Verb conjugator (present tense)
+// ===================================================================
+const IRREGULAR_VERBS = {
+  'ser': ['soy', 'eres', 'es', 'somos', 'sois', 'son'],
+  'estar': ['estoy', 'estás', 'está', 'estamos', 'estáis', 'están'],
+  'ir': ['voy', 'vas', 'va', 'vamos', 'vais', 'van'],
+  'haber': ['he', 'has', 'ha', 'hemos', 'habéis', 'han'],
+  'tener': ['tengo', 'tienes', 'tiene', 'tenemos', 'tenéis', 'tienen'],
+  'hacer': ['hago', 'haces', 'hace', 'hacemos', 'hacéis', 'hacen'],
+  'poder': ['puedo', 'puedes', 'puede', 'podemos', 'podéis', 'pueden'],
+  'querer': ['quiero', 'quieres', 'quiere', 'queremos', 'queréis', 'quieren'],
+  'decir': ['digo', 'dices', 'dice', 'decimos', 'decís', 'dicen'],
+  'venir': ['vengo', 'vienes', 'viene', 'venimos', 'venís', 'vienen'],
+  'dar': ['doy', 'das', 'da', 'damos', 'dais', 'dan'],
+  'ver': ['veo', 'ves', 've', 'vemos', 'veis', 'ven'],
+  'saber': ['sé', 'sabes', 'sabe', 'sabemos', 'sabéis', 'saben'],
+  'poner': ['pongo', 'pones', 'pone', 'ponemos', 'ponéis', 'ponen'],
+  'salir': ['salgo', 'sales', 'sale', 'salimos', 'salís', 'salen'],
+  'traer': ['traigo', 'traes', 'trae', 'traemos', 'traéis', 'traen'],
+  'caer': ['caigo', 'caes', 'cae', 'caemos', 'caéis', 'caen'],
+  'oír': ['oigo', 'oyes', 'oye', 'oímos', 'oís', 'oyen'],
+  'reír': ['río', 'ríes', 'ríe', 'reímos', 'reís', 'ríen'],
+  'oler': ['huelo', 'hueles', 'huele', 'olemos', 'oléis', 'huelen'],
+  'jugar': ['juego', 'juegas', 'juega', 'jugamos', 'jugáis', 'juegan'],
+  'pensar': ['pienso', 'piensas', 'piensa', 'pensamos', 'pensáis', 'piensan'],
+  'cerrar': ['cierro', 'cierras', 'cierra', 'cerramos', 'cerráis', 'cierran'],
+  'empezar': ['empiezo', 'empiezas', 'empieza', 'empezamos', 'empezáis', 'empiezan'],
+  'comenzar': ['comienzo', 'comienzas', 'comienza', 'comenzamos', 'comenzáis', 'comienzan'],
+  'despertar': ['despierto', 'despiertas', 'despierta', 'despertamos', 'despertáis', 'despiertan'],
+  'entender': ['entiendo', 'entiendes', 'entiende', 'entendemos', 'entendéis', 'entienden'],
+  'perder': ['pierdo', 'pierdes', 'pierde', 'perdemos', 'perdéis', 'pierden'],
+  'preferir': ['prefiero', 'prefieres', 'prefiere', 'preferimos', 'preferís', 'prefieren'],
+  'sentir': ['siento', 'sientes', 'siente', 'sentimos', 'sentís', 'sienten'],
+  'mentir': ['miento', 'mientes', 'miente', 'mentimos', 'mentís', 'mienten'],
+  'volver': ['vuelvo', 'vuelves', 'vuelve', 'volvemos', 'volvéis', 'vuelven'],
+  'mover': ['muevo', 'mueves', 'mueve', 'movemos', 'movéis', 'mueven'],
+  'dormir': ['duermo', 'duermes', 'duerme', 'dormimos', 'dormís', 'duermen'],
+  'morir': ['muero', 'mueres', 'muere', 'morimos', 'morís', 'mueren'],
+  'encontrar': ['encuentro', 'encuentras', 'encuentra', 'encontramos', 'encontráis', 'encuentran'],
+  'contar': ['cuento', 'cuentas', 'cuenta', 'contamos', 'contáis', 'cuentan'],
+  'costar': ['cuesto', 'cuestas', 'cuesta', 'costamos', 'costáis', 'cuestan'],
+  'recordar': ['recuerdo', 'recuerdas', 'recuerda', 'recordamos', 'recordáis', 'recuerdan'],
+  'mostrar': ['muestro', 'muestras', 'muestra', 'mostramos', 'mostráis', 'muestran'],
+  'almorzar': ['almuerzo', 'almuerzas', 'almuerza', 'almorzamos', 'almorzáis', 'almuerzan'],
+  'pedir': ['pido', 'pides', 'pide', 'pedimos', 'pedís', 'piden'],
+  'servir': ['sirvo', 'sirves', 'sirve', 'servimos', 'servís', 'sirven'],
+  'repetir': ['repito', 'repites', 'repite', 'repetimos', 'repetís', 'repiten'],
+  'vestir': ['visto', 'vistes', 'viste', 'vestimos', 'vestís', 'visten'],
+  'seguir': ['sigo', 'sigues', 'sigue', 'seguimos', 'seguís', 'siguen'],
+  'elegir': ['elijo', 'eliges', 'elige', 'elegimos', 'elegís', 'eligen'],
+  'conocer': ['conozco', 'conoces', 'conoce', 'conocemos', 'conocéis', 'conocen'],
+  'parecer': ['parezco', 'pareces', 'parece', 'parecemos', 'parecéis', 'parecen'],
+  'conducir': ['conduzco', 'conduces', 'conduce', 'conducimos', 'conducís', 'conducen'],
+  'traducir': ['traduzco', 'traduces', 'traduce', 'traducimos', 'traducís', 'traducen'],
+  'construir': ['construyo', 'construyes', 'construye', 'construimos', 'construís', 'construyen'],
+  'incluir': ['incluyo', 'incluyes', 'incluye', 'incluimos', 'incluís', 'incluyen'],
+  'escoger': ['escojo', 'escoges', 'escoge', 'escogemos', 'escogéis', 'escogen'],
+};
+// Common ways people type a verb without its accent.
+const ACCENT_FIXES = { oir: 'oír', reir: 'reír', sonreir: 'sonreír' };
+IRREGULAR_VERBS['sonreír'] = ['sonrío', 'sonríes', 'sonríe', 'sonreímos', 'sonreís', 'sonríen'];
+
+const CONJUGATION_PRONOUNS = ['yo', 'tú', 'él/ella/usted', 'nosotros', 'vosotros', 'ellos/ustedes'];
+const REFLEXIVE = ['me', 'te', 'se', 'nos', 'os', 'se'];
+
+function conjugateRegular(verb){
+  const ending = verb.slice(-2);
+  const stem = verb.slice(0, -2);
+  if (!stem) return null;
+  if (ending === 'ar') return [stem + 'o', stem + 'as', stem + 'a', stem + 'amos', stem + 'áis', stem + 'an'];
+  if (ending === 'er') return [stem + 'o', stem + 'es', stem + 'e', stem + 'emos', stem + 'éis', stem + 'en'];
+  if (ending === 'ir') return [stem + 'o', stem + 'es', stem + 'e', stem + 'imos', stem + 'ís', stem + 'en'];
+  return null;
+}
+
+function conjugateVerb(input){
+  let verb = input.trim().toLowerCase();
+  if (!/^[a-záéíóúüñ]+$/.test(verb)) return null;
+  verb = ACCENT_FIXES[verb] || verb;
+  if (IRREGULAR_VERBS[verb]) return { verb, forms: IRREGULAR_VERBS[verb], irregular: true };
+  const regular = conjugateRegular(verb);
+  if (regular) return { verb, forms: regular, irregular: false };
+  // Reflexive: llamarse -> me llamo
+  if (verb.length > 4 && verb.endsWith('se')) {
+    const base = conjugateVerb(verb.slice(0, -2));
+    if (base) return { verb, forms: base.forms.map((f, i) => REFLEXIVE[i] + ' ' + f), irregular: base.irregular, reflexive: true };
+  }
+  return null;
+}
+
+function renderVerbResult(result, rawInput){
+  const el = document.getElementById('verbResult');
+  el.innerHTML = '';
+  if (!result) {
+    const msg = document.createElement('div');
+    msg.className = 'empty';
+    msg.textContent = `Couldn't conjugate "${rawInput}". Use the infinitive, the form that ends in -ar, -er or -ir (or -se for reflexive verbs).`;
+    el.appendChild(msg);
+    return;
+  }
+  const badge = document.createElement('div');
+  badge.className = 'sub';
+  badge.style.marginBottom = '10px';
+  const family = '-' + (result.reflexive ? result.verb.slice(-4, -2) : result.verb.slice(-2));
+  badge.textContent = result.verb + ': ' + (result.irregular ? 'irregular in the present tense' : 'regular ' + family + ' verb') + (result.reflexive ? ', reflexive' : '');
+  el.appendChild(badge);
+
+  const table = document.createElement('div');
+  table.className = 'gram-table';
+  CONJUGATION_PRONOUNS.forEach((pron, i) => {
+    const row = document.createElement('div');
+    row.className = 'gram-row';
+    row.style.gridTemplateColumns = '1fr 1fr';
+    const p = document.createElement('span');
+    p.className = 'en-col';
+    p.textContent = pron;
+    const f = document.createElement('span');
+    f.className = 'es-col';
+    f.textContent = result.forms[i];
+    f.addEventListener('click', () => speakSpanish(result.forms[i]));
+    row.append(p, f);
+    table.appendChild(row);
+  });
+  el.appendChild(table);
+
+  if (!result.irregular) {
+    const note = document.createElement('div');
+    note.className = 'empty';
+    note.style.marginTop = '10px';
+    note.textContent = 'Built from the regular pattern. If this verb changes its stem (like pensar → pienso), check it with your tutor or a dictionary.';
+    el.appendChild(note);
+  }
+}
+
+document.getElementById('verbSearch').addEventListener('click', () => {
+  const raw = document.getElementById('verbInput').value.trim();
+  if (!raw) return;
+  renderVerbResult(conjugateVerb(raw), raw);
+});
+document.getElementById('verbInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('verbSearch').click();
+});
+
+// ===================================================================
+// Grammar reference tables
+// ===================================================================
+const PRONOUNS = [
+  ['yo', 'I'],
+  ['tú', 'you (informal)'],
+  ['él / ella / usted', 'he / she / you (formal)'],
+  ['nosotros / nosotras', 'we'],
+  ['vosotros / vosotras', 'you all (Spain)'],
+  ['ellos / ellas / ustedes', 'they / you all'],
+];
+
+const VERB_ENDINGS = [
+  ['yo', 'hablo', 'como', 'vivo'],
+  ['tú', 'hablas', 'comes', 'vives'],
+  ['él/ella/usted', 'habla', 'come', 'vive'],
+  ['nosotros', 'hablamos', 'comemos', 'vivimos'],
+  ['vosotros', 'habláis', 'coméis', 'vivís'],
+  ['ellos/ustedes', 'hablan', 'comen', 'viven'],
+];
+
+const SER_ESTAR = [
+  ['yo', 'soy', 'estoy'],
+  ['tú', 'eres', 'estás'],
+  ['él/ella/usted', 'es', 'está'],
+  ['nosotros', 'somos', 'estamos'],
+  ['vosotros', 'sois', 'estáis'],
+  ['ellos/ustedes', 'son', 'están'],
+];
+
+// Every conjugated word is its own tap target so it can be spoken individually.
+function renderConjugationTable(elId, headers, rows){
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  const gridCols = new Array(headers.length).fill('1fr').join(' ');
+
+  const head = document.createElement('div');
+  head.className = 'gram-row head';
+  head.style.gridTemplateColumns = gridCols;
+  headers.forEach(h => { const s = document.createElement('span'); s.textContent = h; head.appendChild(s); });
+  el.appendChild(head);
+
+  rows.forEach(cells => {
+    const row = document.createElement('div');
+    row.className = 'gram-row';
+    row.style.gridTemplateColumns = gridCols;
+    const pron = document.createElement('span');
+    pron.className = 'en-col';
+    pron.textContent = cells[0];
+    row.appendChild(pron);
+    cells.slice(1).forEach(word => {
+      const span = document.createElement('span');
+      span.className = 'es-col';
+      span.textContent = word;
+      span.addEventListener('click', () => speakSpanish(word));
+      row.appendChild(span);
+    });
+    el.appendChild(row);
+  });
+}
+
+const NUMBER_PATTERNS = [
+  { label: '0–15: just memorize these', note: 'No pattern here. These are irregular roots.',
+    words: ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince'] },
+  { label: '16–19: "dieci-" plus the ones digit', note: 'From "diez y" (ten and), fused into one word.',
+    words: ['dieciséis', 'diecisiete', 'dieciocho', 'diecinueve'] },
+  { label: '20: its own word', note: '', words: ['veinte'] },
+  { label: '21–29: "veinti-" plus the ones digit', note: 'From "veinte y" (twenty and), fused into one word.',
+    words: ['veintiuno', 'veintidós', 'veintitrés', 'veinticuatro', 'veinticinco', 'veintiséis', 'veintisiete', 'veintiocho', 'veintinueve'] },
+  { label: '30: its own word', note: 'From Latin "triginta", not built from "tres".', words: ['treinta'] },
+  { label: '40–90: a root plus "-enta"', note: 'ochenta is "och-" (from ocho) plus "-enta", not "ocho diez". Same idea: cuatro → cuarenta, cinco → cincuenta, seis → sesenta, siete → setenta, nueve → noventa.',
+    words: ['cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'] },
+  { label: '31 and up: two words joined by "y"', note: "The fusion only happens in the teens and twenties. From 31 on, it's tens + \"y\" + ones, written separately.",
+    words: ['treinta y uno', 'cuarenta y dos', 'setenta y cinco'] },
+  { label: '100: its own word', note: 'cien on its own, ciento when more follows (ciento uno).', words: ['cien', 'ciento uno'] },
+];
+
+function renderNumberPatterns(){
+  const el = document.getElementById('numberPatterns');
+  el.innerHTML = '';
+  NUMBER_PATTERNS.forEach(group => {
+    const card = document.createElement('div');
+    card.className = 'num-pattern-card';
+    const label = document.createElement('div');
+    label.className = 'num-pattern-label';
+    label.textContent = group.label;
+    card.appendChild(label);
+    if (group.note) {
+      const note = document.createElement('div');
+      note.className = 'num-pattern-note';
+      note.textContent = group.note;
+      card.appendChild(note);
+    }
+    const wrap = document.createElement('div');
+    wrap.className = 'num-pattern-words';
+    group.words.forEach(word => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'num-chip';
+      chip.textContent = word;
+      chip.addEventListener('click', () => speakSpanish(word));
+      wrap.appendChild(chip);
+    });
+    card.appendChild(wrap);
+    el.appendChild(card);
+  });
+}
+
+function renderGrammar(){
+  const pTable = document.getElementById('pronounTable');
+  pTable.innerHTML = '';
+  PRONOUNS.forEach(([es, en]) => {
+    const row = document.createElement('div');
+    row.className = 'gram-row';
+    row.style.gridTemplateColumns = '1fr 1fr';
+    const esSpan = document.createElement('span');
+    esSpan.className = 'es-col';
+    esSpan.textContent = es;
+    esSpan.addEventListener('click', () => speakSpanish(es.split(' / ').join(', ')));
+    const enSpan = document.createElement('span');
+    enSpan.className = 'en-col';
+    enSpan.textContent = en;
+    row.append(esSpan, enSpan);
+    pTable.appendChild(row);
+  });
+  renderConjugationTable('verbTable', ['', '-AR (hablar)', '-ER (comer)', '-IR (vivir)'], VERB_ENDINGS);
+  renderConjugationTable('serEstarTable', ['', 'SER', 'ESTAR'], SER_ESTAR);
+  renderNumberPatterns();
+}
+
+// ===================================================================
+// Practice (flashcards)
+// ===================================================================
+let practiceDeck = [];
+let practiceIdx = 0;
+let practiceFlipped = false;
+
+function loadPracticeDeck(){
+  practiceDeck = getVocab().slice();
+  practiceIdx = 0;
+  practiceFlipped = false;
+}
+
+function renderFlashcard(){
+  const countEl = document.getElementById('practiceCount');
+  const faceEl = document.getElementById('flashcardFace');
+  const phonEl = document.getElementById('flashcardPhon');
+  const catEl = document.getElementById('flashcardCat');
+
+  if (practiceDeck.length === 0) {
+    countEl.textContent = 'No vocab yet. Add some words in the Vocab tab first.';
+    faceEl.textContent = 'Add some vocab first';
+    faceEl.className = 'flashcard-face';
+    phonEl.textContent = '';
+    catEl.textContent = '';
+    return;
+  }
+  countEl.textContent = `Card ${practiceIdx + 1} of ${practiceDeck.length}`;
+  const entry = practiceDeck[practiceIdx];
+  catEl.textContent = (CATEGORIES.find(c => c.value === entry.category) || { label: entry.category || 'General' }).label;
+  if (!practiceFlipped) {
+    faceEl.textContent = entry.es;
+    faceEl.className = 'flashcard-face';
+    phonEl.textContent = entry.phonetic || pronounce(entry.es);
+  } else {
+    faceEl.textContent = entry.en || '(no meaning saved)';
+    faceEl.className = 'flashcard-face answer';
+    phonEl.textContent = '';
+  }
+}
+
+function initPractice(){
+  const flip = () => { if (!practiceDeck.length) return; practiceFlipped = !practiceFlipped; renderFlashcard(); };
+  document.getElementById('flashcard').addEventListener('click', flip);
+  document.getElementById('practiceFlip').addEventListener('click', flip);
+  document.getElementById('practiceNext').addEventListener('click', () => {
+    if (!practiceDeck.length) return;
+    practiceIdx = (practiceIdx + 1) % practiceDeck.length;
+    practiceFlipped = false;
+    renderFlashcard();
+  });
+  document.getElementById('practicePrev').addEventListener('click', () => {
+    if (!practiceDeck.length) return;
+    practiceIdx = (practiceIdx - 1 + practiceDeck.length) % practiceDeck.length;
+    practiceFlipped = false;
+    renderFlashcard();
+  });
+  document.getElementById('practiceSpeak').addEventListener('click', () => {
+    if (practiceDeck.length) speakSpanish(practiceDeck[practiceIdx].es);
+  });
+  document.getElementById('practiceShuffle').addEventListener('click', () => {
+    for (let i = practiceDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [practiceDeck[i], practiceDeck[j]] = [practiceDeck[j], practiceDeck[i]];
+    }
+    practiceIdx = 0;
+    practiceFlipped = false;
+    renderFlashcard();
+  });
+}
+
+// ===================================================================
+// Start
+// ===================================================================
+(function init(){
+  migrateLegacyKeys();
+  seedVocabIfNeeded();
+  fillCategorySelect(document.getElementById('categorySelect'), 'General');
+
+  loadPracticeDeck();
+  initPractice();
+  renderChecklist();
+  renderWeekGrid();
+  renderCalendar();
+  renderNextLesson();
+  renderVocab();
+  renderAlphabet();
+  renderGrammar();
+  renderSettings();
+  renderFlashcard();
+  initTabs();
+
+  if ('speechSynthesis' in window) {
+    loadVoices();
+    window.speechSynthesis.addEventListener
+      ? window.speechSynthesis.addEventListener('voiceschanged', loadVoices)
+      : (window.speechSynthesis.onvoiceschanged = loadVoices);
+  }
+})();
+</script>
+</body>
+</html>
